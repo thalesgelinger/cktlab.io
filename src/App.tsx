@@ -1,27 +1,20 @@
 import type { Component } from 'solid-js';
-
-import logo from './logo.svg';
-import styles from './App.module.css';
+import { Line, Scene } from './src/components';
+import './global.css'
 
 const App: Component = () => {
-  return (
-    <div class={styles.App}>
-      <header class={styles.header}>
-        <img src={logo} class={styles.logo} alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          class={styles.link}
-          href="https://github.com/solidjs/solid"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-        IT'S FUCKING WORKING 
-        </a>
-      </header>
-    </div>
-  );
+    return <Scene>
+        <Line
+            color={0xfff000}
+            points={[
+                [-10, 0],
+                [0, 10],
+                [10, 0],
+                [10, 10],
+                [50, 50],
+            ]}
+        />
+    </Scene>
 };
 
 export default App;
