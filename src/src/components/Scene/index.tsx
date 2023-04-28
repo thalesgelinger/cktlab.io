@@ -1,26 +1,38 @@
 import { Component, createEffect } from 'solid-js';
-import { PerspectiveCamera, Scene as TScene, WebGLRenderer } from 'three';
+import { PerspectiveCamera, Scene as TScene, WebGLRenderer, Object3D } from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+
+type CameraType = () => PerspectiveCamera;
+type ElementTypes = (() => Object3D)[]
 
 type SceneType = {
-    children: any;
+    children:  [CameraType, ElementTypes[ElementTypes["length"]]] 
 }
 
 export const Scene: Component<SceneType> = ({ children }) => {
+    const [camera, ...elements] = children.map(child => child());
+    const scene = new TScene();
     const renderer = new WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
 
-    const camera = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
-    camera.position.set(0, 0, 100);
-    camera.lookAt(0, 0, 0);
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.update();
 
-    const scene = new TScene();
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+    }
 
     createEffect(() => {
-        Array.isArray(children) ?
-            children.forEach(child => {
-                scene.add(child())
-            }) : scene.add(children())
-        renderer.render(scene, camera);
+        elements.forEach(appendChildren);
+        animate()
     })
-    return <div>{renderer.domElement}</div>
+
+    const appendChildren = (child: Object3D) => {
+        console.log({ child })
+        scene.add(child)
+    }
+
+    return renderer.domElement
 }
